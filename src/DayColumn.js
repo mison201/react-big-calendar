@@ -15,7 +15,7 @@ import getStyledEvents, { positionFromDate, startsBefore } from './utils/dayView
 
 import TimeColumn from './TimeColumn'
 
-function snapToSlot(date, step){
+function snapToSlot(date, step) {
   var roundTo = 1000 * 60 * step;
   return new Date(Math.floor(date.getTime() / roundTo) * roundTo)
 }
@@ -69,7 +69,7 @@ let DaySlot = React.createClass({
 
   componentDidMount() {
     this.props.selectable
-    && this._selectable()
+      && this._selectable()
   },
 
   componentWillUnmount() {
@@ -120,9 +120,9 @@ let DaySlot = React.createClass({
 
         {selecting &&
           <div className='rbc-slot-selection' style={style}>
-              <span>
-              { localizer.format(selectDates, selectRangeFormat, culture) }
-              </span>
+            <span>
+              {localizer.format(selectDates, selectRangeFormat, culture)}
+            </span>
           </div>
         }
       </TimeColumn>
@@ -174,7 +174,7 @@ let DaySlot = React.createClass({
               [isRtl ? 'right' : 'left']: `${Math.max(0, xOffset)}%`,
               width: `${width}%`
             }}
-            title={label + ': ' + title }
+            title={label + ': ' + title}
             onClick={(e) => this._select(event, e)}
             className={cn('rbc-event', className, {
               'rbc-selected': _isSelected,
@@ -184,8 +184,8 @@ let DaySlot = React.createClass({
           >
             <div className='rbc-event-label'>{label}</div>
             <div className='rbc-event-content'>
-              { EventComponent
-                ? <EventComponent event={event} title={title}/>
+              {EventComponent
+                ? <EventComponent event={event} title={title} />
                 : title
               }
             </div>
@@ -205,9 +205,9 @@ let DaySlot = React.createClass({
     }
   },
 
-  _selectable(){
+  _selectable() {
     let node = findDOMNode(this);
-    let selector = this._selector = new Selection(()=> findDOMNode(this))
+    let selector = this._selector = new Selection(() => findDOMNode(this))
 
     let maybeSelect = (box) => {
       let onSelecting = this.props.onSelecting
@@ -218,7 +218,7 @@ let DaySlot = React.createClass({
       if (onSelecting) {
         if (
           (dates.eq(current.startDate, start, 'minutes') &&
-          dates.eq(current.endDate, end, 'minutes')) ||
+            dates.eq(current.endDate, end, 'minutes')) ||
           onSelecting({ start, end }) === false
         )
           return
@@ -291,9 +291,21 @@ let DaySlot = React.createClass({
     this._selector = null;
   },
 
-  _selectSlot({ startDate, endDate, action }) {
+  _selectSlot({ startDate, endDate, startSlot, action }) {
     let current = startDate
       , slots = [];
+
+    let dom, thisStep;
+    let thisStepGroup = startSlot / this.props.step;
+    let midStep = this._selector.container().children[0].children.length;
+
+    if (thisStepGroup % midStep == 0) {
+      thisStep = thisStepGroup / midStep;
+      dom = this._selector.container().children[thisStep].children[0];
+    } else {
+      thisStep = (thisStepGroup - 1) / midStep;
+      dom = this._selector.container().children[thisStep].children[1];
+    }
 
     while (dates.lte(current, endDate)) {
       slots.push(current)
@@ -304,6 +316,7 @@ let DaySlot = React.createClass({
       slots,
       start: startDate,
       end: endDate,
+      dom: dom,
       action
     })
   },
@@ -314,7 +327,7 @@ let DaySlot = React.createClass({
 });
 
 
-function minToDate(min, date){
+function minToDate(min, date) {
   var dt = new Date(date)
     , totalMins = dates.diff(dates.startOf(date, 'day'), date, 'minutes');
 

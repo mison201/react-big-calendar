@@ -122,12 +122,14 @@ export default class TimeGrid extends Component {
     }
   }
 
-  handleSelectAllDaySlot = (slots, slotInfo) => {
+  handleSelectAllDaySlot = (slots, slotInfo, dom) => {
     const { onSelectSlot } = this.props;
+    let domAllday = dom.children[0].children[slotInfo.start];
     notify(onSelectSlot, {
       slots,
       start: slots[0],
       end: slots[slots.length - 1],
+      dom: domAllday,
       action: slotInfo.action
     })
   }
@@ -159,8 +161,7 @@ export default class TimeGrid extends Component {
         if (
           get(event, allDayAccessor)
           || !dates.eq(eStart, eEnd, 'day')
-          || (dates.isJustDate(eStart) && dates.isJustDate(eEnd)))
-        {
+          || (dates.isJustDate(eStart) && dates.isJustDate(eEnd))) {
           allDayEvents.push(event)
         }
         else
@@ -195,7 +196,7 @@ export default class TimeGrid extends Component {
     );
   }
 
-  renderEvents(range, events, today){
+  renderEvents(range, events, today) {
     let { min, max, endAccessor, startAccessor, components } = this.props;
 
     return range.map((date, idx) => {
@@ -245,7 +246,7 @@ export default class TimeGrid extends Component {
             className='rbc-label rbc-header-gutter'
             style={{ width }}
           />
-          { this.renderHeaderCells(range) }
+          {this.renderHeaderCells(range)}
         </div>
         <div className='rbc-row'>
           <div
@@ -253,7 +254,7 @@ export default class TimeGrid extends Component {
             className='rbc-label rbc-header-gutter'
             style={{ width }}
           >
-            { message(messages).allDay }
+            {message(messages).allDay}
           </div>
           <DateContentRow
             minRows={2}
@@ -279,7 +280,7 @@ export default class TimeGrid extends Component {
     )
   }
 
-  renderHeaderCells(range){
+  renderHeaderCells(range) {
     let { dayFormat, culture, components, getDrilldownView } = this.props;
     let HeaderComponent = components.header || Header
 
@@ -314,16 +315,16 @@ export default class TimeGrid extends Component {
               {header}
             </a>
           ) : (
-            <span>
-              {header}
-            </span>
-          )}
+              <span>
+                {header}
+              </span>
+            )}
         </div>
       )
     })
   }
 
-  handleHeaderClick(date, view, e){
+  handleHeaderClick(date, view, e) {
     e.preventDefault()
     notify(this.props.onDrillDown, [date, view])
   }
@@ -338,7 +339,7 @@ export default class TimeGrid extends Component {
     notify(this.props.onSelectEvent, args)
   }
 
-  clearSelection(){
+  clearSelection() {
     clearTimeout(this._selectTimer)
     this._pendingSelection = [];
   }

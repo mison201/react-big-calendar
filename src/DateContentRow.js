@@ -53,10 +53,18 @@ class DateContentRow extends React.Component {
 
   handleSelectSlot = (slot) => {
     const { range, onSelectSlot } = this.props;
+    let dom;
+    
+    if (this.getContainer().className == 'rbc-month-view') {
+      dom = this.headingRow;
+    } else {
+      dom = this.getContainer();
+    }
 
     onSelectSlot(
       range.slice(slot.start, slot.end + 1),
       slot,
+      dom
     )
   }
 
@@ -65,13 +73,13 @@ class DateContentRow extends React.Component {
     let row = qsa(findDOMNode(this), '.rbc-row-bg')[0]
 
     let cell;
-    if (row) cell = row.children[slot-1]
+    if (row) cell = row.children[slot - 1]
 
     let events = this.segments
       .filter(seg => isSegmentInSlot(seg, slot))
       .map(seg => seg.event)
 
-    onShowMore(events, range[slot-1], cell, slot)
+    onShowMore(events, range[slot - 1], cell, slot)
   }
 
   createHeadingRef = r => {
@@ -162,7 +170,7 @@ class DateContentRow extends React.Component {
     }))
 
     let { levels, extra } = eventLevels(segments, Math.max(maxRows - 1, 1));
-    while (levels.length < minRows ) levels.push([])
+    while (levels.length < minRows) levels.push([])
 
     return (
       <div className={className}>
